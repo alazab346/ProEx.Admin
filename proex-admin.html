@@ -1,0 +1,3070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<title>ProEx — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,600;1,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<style>
+  :root {
+    --primary: #298A8B;
+    --primary-light: #3AACAD;
+    --primary-dark: #1d6566;
+    --primary-ghost: rgba(41,138,139,0.08);
+    --primary-glow: rgba(41,138,139,0.25);
+    --secondary: #5D9CB5;
+    --accent: #F0A500;
+    --bg: #0F1317;
+    --bg2: #161C22;
+    --bg3: #1D252E;
+    --bg4: #242D38;
+    --border: rgba(255,255,255,0.07);
+    --border-accent: rgba(41,138,139,0.3);
+    --text: #E8EDF2;
+    --text-muted: #6B7A8D;
+    --text-dim: #9BA8B5;
+    --white: #FFFFFF;
+    --red: #E05B5B;
+    --green: #52C87A;
+    --yellow: #F0A500;
+    --sidebar-w: 260px;
+    --topbar-h: 64px;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+  /* ─── SIDEBAR ─── */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: #298A8B 
+ {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: #1A2035;  /* 👈 put your color here */
+    border-right: 1px solid var(--border);
+    ...
+};  /* 👈 put your color here */
+    border-right: 1px solid var(--border);
+  
+}
+
+ .sidebar-logo {
+    padding: 22px 24px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.lang-toggle{
+cursor:pointer;
+padding:6px 10px;
+border-radius:6px;
+border:1px solid var(--border);
+font-weight:600;
+font-size:14px;
+background:var(--bg3);
+color:var(--text);
+margin-right:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+transition:0.2s;
+}
+
+.lang-toggle:hover{
+background:var(--primary);
+color:white;
+}
+
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: white;
+    letter-spacing: -0.5px;
+    box-shadow: 0 0 20px var(--primary-glow);
+  }
+
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: -0.5px;
+  }
+  .logo-text span { color: var(--primary-light); }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+  }
+
+  .nav-section {
+    margin-bottom: 24px;
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 12px;
+    margin-bottom: 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 1px;
+    position: relative;
+    user-select: none;
+  }
+
+  .nav-item:hover {
+    background: var(--bg3);
+    color: var(--text);
+  }
+
+  .nav-item.active {
+    background: var(--primary-ghost);
+    color: var(--primary-light);
+    font-weight: 500;
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 20%; bottom: 20%;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 2px 2px 0;
+  }
+
+  .nav-icon {
+    width: 18px; height: 18px;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 20px;
+  }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .admin-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg3);
+    border-radius: var(--radius-sm);
+  }
+
+  .admin-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .admin-info { flex: 1; min-width: 0; }
+  .admin-name { font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .admin-role { font-size: 11px; color: var(--text-muted); }
+
+  /* ─── MAIN ─── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ─── TOPBAR ─── */
+  #topbar {
+    height: var(--topbar-h);
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+  }
+
+  .topbar-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--white);
+    flex: 1;
+  }
+
+  .topbar-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 14px;
+    width: 240px;
+    transition: border-color 0.2s;
+  }
+
+  .topbar-search:focus-within {
+    border-color: var(--primary);
+  }
+
+  .topbar-search input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+  }
+
+  .topbar-search input::placeholder { color: var(--text-muted); }
+
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+  .topbar-btn {
+    width: 36px; height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+    color: var(--text-dim);
+  }
+
+  .topbar-btn:hover { background: var(--bg4); color: var(--text); }
+
+  .notif-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 7px; height: 7px;
+    background: var(--red);
+    border-radius: 50%;
+    border: 2px solid var(--bg2);
+  }
+
+  /* ─── CONTENT ─── */
+  #content {
+    flex: 1;
+    padding: 28px;
+    overflow-y: auto;
+  }
+
+  .page { display: none; animation: fadeIn 0.25s ease; }
+  .page.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── PAGE HEADER ─── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+.page-title{
+font-family:'Cormorant Garamond', serif;
+font-size:42px;
+font-weight:700;
+letter-spacing:1px;
+}
+
+.teal{
+color:#2A8A8B;
+}
+
+.gold{
+color:#C69C59;
+}
+
+  .page-subtitle {
+    font-size: 18px;
+    color: var(--text-muted);
+    color: #298A8B; 
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    border: none;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 0 0 0 var(--primary-glow);
+  }
+  .btn-primary:hover { background: var(--primary-light); box-shadow: 0 0 16px var(--primary-glow); }
+
+  .btn-ghost {
+    background: var(--bg3);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--bg4); color: var(--text); }
+
+  .btn-danger { background: rgba(224,91,91,0.15); color: var(--red); border: 1px solid rgba(224,91,91,0.25); }
+  .btn-danger:hover { background: rgba(224,91,91,0.25); }
+
+  .btn-success { background: rgba(82,200,122,0.15); color: var(--green); border: 1px solid rgba(82,200,122,0.25); }
+  .btn-success:hover { background: rgba(82,200,122,0.25); }
+
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-xs { padding: 4px 9px; font-size: 11px; border-radius: 6px; }
+
+  /* ─── CARDS ─── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* ─── STAT CARDS ─── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--primary-ghost);
+    transform: translate(20px, -20px);
+  }
+
+  .stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: var(--primary-ghost);
+    border: 1px solid var(--border-accent);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    color: var(--primary-light);
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label { font-size: 12px; color: var(--text-muted); }
+
+  .stat-change {
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .stat-change.up { color: var(--green); }
+  .stat-change.down { color: var(--red); }
+
+  /* ─── CHARTS GRID ─── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .chart-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .chart-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .chart-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+
+  canvas { max-height: 260px; }
+
+  /* ─── TABLES ─── */
+  .table-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .table-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .table-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .table-controls { display: flex; gap: 10px; align-items: center; }
+
+  .search-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 200px;
+  }
+  .search-input:focus { border-color: var(--primary); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg3); }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    vertical-align: middle;
+  }
+
+  .td-bold { color: var(--text); font-weight: 500; }
+
+  .user-cell { display: flex; align-items: center; gap: 10px; }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .actions-cell { display: flex; gap: 6px; align-items: center; }
+
+  /* ─── BADGES ─── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-green { background: rgba(82,200,122,0.12); color: var(--green); border: 1px solid rgba(82,200,122,0.25); }
+  .badge-red { background: rgba(224,91,91,0.12); color: var(--red); border: 1px solid rgba(224,91,91,0.25); }
+  .badge-yellow { background: rgba(240,165,0,0.12); color: var(--yellow); border: 1px solid rgba(240,165,0,0.25); }
+  .badge-blue { background: rgba(93,156,181,0.12); color: var(--secondary); border: 1px solid rgba(93,156,181,0.25); }
+  .badge-primary { background: var(--primary-ghost); color: var(--primary-light); border: 1px solid var(--border-accent); }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+    animation: modalIn 0.25s cubic-bezier(.4,0,.2,1);
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .modal-close {
+    width: 30px; height: 30px;
+    border-radius: var(--radius-sm);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .modal-close:hover { background: var(--bg4); color: var(--text); }
+
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* ─── FORMS ─── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid.cols-1 { grid-template-columns: 1fr; }
+  .form-full { grid-column: 1 / -1; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+  .form-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.3px;
+  }
+
+  .form-control {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 9px 13px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+  .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ghost); }
+  .form-control::placeholder { color: var(--text-muted); }
+
+  select.form-control { cursor: pointer; }
+
+  textarea.form-control { resize: vertical; min-height: 80px; }
+
+  /* ─── MESSAGES ─── */
+  .msg-list { display: flex; flex-direction: column; gap: 1px; }
+
+  .msg-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .msg-item:hover { background: var(--bg3); }
+  .msg-item.unread { background: rgba(41,138,139,0.04); }
+
+  .msg-unread-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--primary);
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  .msg-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--bg4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .msg-info { flex: 1; min-width: 0; }
+  .msg-name { font-size: 13.5px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .msg-subject { font-size: 12px; color: var(--text-dim); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-preview { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+  /* ─── MEDIA GRID ─── */
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+
+  .media-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .media-item:hover { border-color: var(--primary); transform: translateY(-2px); }
+
+  .media-thumb {
+    width: 100%; aspect-ratio: 1;
+    background: var(--bg4);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .media-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .media-placeholder {
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 6px;
+    color: var(--text-muted); font-size: 11px;
+  }
+
+  .media-info { padding: 10px; }
+  .media-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .media-date { font-size: 11px; color: var(--text-muted); }
+
+  .media-del {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: rgba(224,91,91,0.85);
+    display: none; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 11px;
+  }
+
+  .media-item:hover .media-del { display: flex; }
+
+  /* ─── UPLOAD ZONE ─── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+  .upload-zone:hover { border-color: var(--primary); color: var(--primary-light); background: var(--primary-ghost); }
+  .upload-zone .upload-icon { font-size: 32px; margin-bottom: 10px; }
+  .upload-zone p { font-size: 13px; }
+  .upload-zone span { font-size: 11px; color: var(--text-muted); }
+
+  /* ─── ANALYTICS ─── */
+  .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .analytics-grid.single { grid-template-columns: 1fr; }
+
+  /* ─── SETTINGS ─── */
+  .settings-section { margin-bottom: 28px; }
+  .settings-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+
+  /* ─── TOAST ─── */
+  #toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: toastIn 0.25s ease;
+    min-width: 260px;
+    max-width: 360px;
+  }
+
+  .toast.success { border-left: 3px solid var(--green); }
+  .toast.error { border-left: 3px solid var(--red); }
+  .toast.info { border-left: 3px solid var(--primary); }
+
+  @keyframes toastIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  .empty-state svg { width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3; }
+  .empty-state h3 { font-size: 15px; color: var(--text-dim); margin-bottom: 6px; }
+  .empty-state p { font-size: 13px; }
+
+  /* ─── TABS ─── */
+  .tabs { display: flex; gap: 4px; background: var(--bg3); padding: 4px; border-radius: var(--radius-sm); margin-bottom: 20px; width: fit-content; }
+  .tab { padding: 7px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
+  .tab.active { background: var(--bg2); color: var(--primary-light); box-shadow: var(--shadow-sm); }
+
+  /* ─── CONFIRM DIALOG ─── */
+  .confirm-dialog {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+  }
+  .confirm-icon { font-size: 40px; margin-bottom: 16px; }
+  .confirm-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+  .confirm-text { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1024px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .analytics-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+
+#sidebar {
+transform: translateX(-100%);
+position: fixed;
+z-index: 200;
+}
+
+#sidebar.open {
+transform: translateX(0);
+}
+
+#main {
+margin-left: 0;
+}
+
+.stats-grid {
+grid-template-columns: 1fr;
+}
+
+.charts-grid {
+grid-template-columns: 1fr;
+}
+
+.analytics-grid {
+grid-template-columns: 1fr;
+}
+
+#content {
+padding: 16px;
+}
+
+.topbar-search {
+display: none;
+}
+
+table {
+font-size:12px;
+}
+
+}
+
+  /* ─── DROPDOWN ─── */
+  .dropdown { position: relative; }
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    min-width: 160px;
+    box-shadow: var(--shadow);
+    z-index: 50;
+    display: none;
+    overflow: hidden;
+  }
+  .dropdown-menu.open { display: block; }
+  .dropdown-item {
+    padding: 9px 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dropdown-item:hover { background: var(--bg4); color: var(--text); }
+  .dropdown-item.danger { color: var(--red); }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar { background: var(--bg4); border-radius: 20px; height: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, var(--primary), var(--primary-light)); transition: width 0.6s ease; }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* ─── LOGIN ─── */
+  #login-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .login-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 32px 64px rgba(0,0,0,0.5);
+  }
+
+  .login-logo { text-align: center; margin-bottom: 32px; }
+  .login-logo-icon {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: white;
+    margin: 0 auto 12px;
+    box-shadow: 0 0 30px var(--primary-glow);
+  }
+  .login-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; color: var(--white); }
+  .login-logo-text span { color: var(--primary-light); }
+  .login-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  .login-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .login-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+
+  .login-hint {
+    margin-top: 16px;
+    padding: 12px;
+    background: var(--primary-ghost);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+  }
+
+  /* ─── REPORT CARDS ─── */
+  .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+
+  .report-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    transition: border-color 0.2s;
+  }
+  .report-card:hover { border-color: var(--border-accent); }
+  .report-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .report-value { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--white); margin-bottom: 6px; }
+  .report-progress-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+.search-input::placeholder { color: var(--text-muted); }
+
+/* Google Translate Fix */
+.goog-te-banner-frame {
+display:none !important;
+}
+
+body {
+top:0px !important;
+}
+
+/* Hide Google Translate banner completely */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate {
+display: none !important;
+}
+
+/* Hide Google Translate bar completely */
+body > .skiptranslate {
+display: none !important;
+}
+
+.goog-te-banner-frame {
+display: none !important;
+}
+
+.goog-te-banner-frame.skiptranslate {
+display: none !important;
+}
+
+iframe.goog-te-banner-frame {
+display: none !important;
+}
+
+body {
+top: 0px !important;
+}
+/* DASHBOARD CARDS RESPONSIVE GRID */
+
+.dashboard-cards{
+display:grid;
+grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+gap:20px;
+width:100%;
+max-width:1200px;
+margin:auto;
+}
+</style>
+</head>
+<body>
+
+<!-- ─── LOGIN SCREEN ─── -->
+ <div id="google_translate_element" style="display:none"></div>
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+     <img src="ProEx_logo.png" alt="ProEx Logo" style="width: 120px; height: auto; display: block; margin: 0 auto 12px;">
+      <div class="login-subtitle">Admin Control Panel</div>
+    </div>
+    <div class="login-title">Welcome back</div>
+    <div class="login-desc">Sign in to your admin account</div>
+    <div class="form-group" style="margin-bottom:14px">
+      <label class="form-label">Email Address</label>
+      <input type="email" id="login-email" class="form-control" placeholder="admin@proex.com" value="admin@proex.com">
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label class="form-label">Password</label>
+      <input type="password" id="login-pass" class="form-control" placeholder="••••••••" value="admin123">
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="doLogin()">Sign In to Dashboard</button>
+    <div class="login-hint">Demo — Email: admin@proex.com &nbsp;|&nbsp; Password: admin123</div>
+  </div>
+</div>
+
+<!-- ─── SIDEBAR ─── -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <img src="ProEx_logo.png" style="height: 75px; object-fit: contain;">
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-item active" onclick="navigate('dashboard',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Management</div>
+      <div class="nav-item" onclick="navigate('users',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        Users
+      </div>
+      <div class="nav-item" onclick="navigate('services',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Services
+      </div>
+      <div class="nav-item" onclick="navigate('team',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Our Team
+      </div>
+      <div class="nav-item" onclick="navigate('clients',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        Our Clients
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Content</div>
+      <div class="nav-item" onclick="navigate('media',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Media Library
+      </div>
+      <div class="nav-item" onclick="navigate('posts',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Media Posts
+      </div>
+      <div class="nav-item" onclick="navigate('messages',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+        <span class="nav-badge" id="msg-badge">3</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Analytics</div>
+      <div class="nav-item" onclick="navigate('reports',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Reports
+      </div>
+      <div class="nav-item" onclick="navigate('analytics',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Account</div>
+      <div class="nav-item" onclick="navigate('changepass',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Change Password
+      </div>
+      <div class="nav-item" onclick="navigate('settings',this)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </div>
+      <div class="nav-item" onclick="doLogout()" style="color:var(--red)">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="admin-chip">
+      <div class="admin-avatar">SA</div>
+      <div class="admin-info">
+        <div class="admin-name">Super Admin</div>
+        <div class="admin-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<div id="main">
+  <!-- TOPBAR -->
+  <header id="topbar">
+    <button onclick="toggleSidebar()" class="topbar-btn" style="display:none" id="menu-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="topbar-title" id="topbar-title">Admin Dashboard</div>
+
+   
+   <div class="lang-toggle" onclick="toggleLanguage()">
+<span id="langLabel">AR</span>
+</div>
+
+    <div class="topbar-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="globalSearch" placeholder="Search anything..." oninput="globalSearch()">
+    </div>
+    <div class="topbar-actions">
+      <div class="topbar-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot"></span>
+      </div>
+      <div class="topbar-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main id="content">
+
+    <!-- ─── DASHBOARD ─── -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div>
+    <div class="page-title">
+<span class="teal">P</span><span class="gold">ro</span><span class="teal">E</span><span class="gold">x</span>
+</div>
+    <div class="page-subtitle">for Consulting and Business Development</div>
+</div>
+        <button class="btn btn-primary" onclick="exportExcel()">
+Export Excel
+</button>
+
+<button class="btn btn-primary" onclick="exportPDF()">
+Export PDF
+</button>
+      </div>
+
+      <div class="stats-grid" id="stat-cards">
+        <!-- injected by JS -->
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-wrap">
+          <div class="chart-title">User Growth</div>
+          <div class="chart-sub">Monthly registered users over the past year</div>
+          <canvas id="chart-growth"></canvas>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Content Distribution</div>
+          <div class="chart-sub">Breakdown of content types</div>
+          <canvas id="chart-donut"></canvas>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-wrap">
+          <div class="chart-title">System Activity</div>
+          <div class="chart-sub">Weekly events & interactions</div>
+          <canvas id="chart-activity"></canvas>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Recent Messages</div>
+          <div class="chart-sub">Latest inbox messages</div>
+          <div id="dash-messages" style="margin-top:4px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── USERS ─── -->
+    <div id="page-users" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Users Management</div>
+          <div class="page-subtitle">Manage all registered users</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-user')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add User
+        </button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">All Users</div>
+          <div class="table-controls">
+            <input type="text" class="search-input" placeholder="Search users…" oninput="filterTable('users-tbody',this.value)">
+            <select class="search-input" style="width:auto" onchange="filterByStatus(this.value)">
+              <option value="">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <table id="reportTable">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── SERVICES ─── -->
+    <div id="page-services" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Services Management</div>
+          <div class="page-subtitle">Manage your company services</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-service')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Service
+        </button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">All Services</div>
+          <input type="text" class="search-input" placeholder="Search services…" oninput="filterTable('services-tbody',this.value)">
+        </div>
+        <table id="ServicesTable">
+          <thead><tr><th>Icon</th><th>Title</th><th>Description</th><th>Created</th><th>Actions</th></tr></thead>
+          <tbody id="services-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── TEAM ─── -->
+    <div id="page-team" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Our Team</div>
+          <div class="page-subtitle">Manage team members</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-team')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Member
+        </button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Team Members</div>
+          <input type="text" class="search-input" placeholder="Search team…" oninput="filterTable('team-tbody',this.value)">
+        </div>
+        <table id="TeamTable">
+          <thead><tr><th>Member</th><th>Position</th><th>Description</th><th>Created</th><th>Actions</th></tr></thead>
+          <tbody id="team-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── CLIENTS ─── -->
+    <div id="page-clients" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Our Clients</div>
+          <div class="page-subtitle">Manage client accounts</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-client')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Client
+        </button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">All Clients</div>
+          <input type="text" class="search-input" placeholder="Search clients…" oninput="filterTable('clients-tbody',this.value)">
+        </div>
+       <table id="clientsTable">
+          <thead><tr><th>Logo</th><th>Name</th><th>Description</th><th>Website</th><th>Created</th><th>Actions</th></tr></thead>
+          <tbody id="clients-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── MEDIA ─── -->
+    <div id="page-media" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Media Library</div>
+          <div class="page-subtitle">Manage uploaded files and images</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-upload-media')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload Files
+        </button>
+      </div>
+      <div class="media-grid" id="media-grid"></div>
+    </div>
+
+    <!-- ─── POSTS ─── -->
+    <div id="page-posts" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Media Posts</div>
+          <div class="page-subtitle">Manage blog posts and articles</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-post')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Post
+        </button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">All Posts</div>
+          <div class="table-controls">
+            <input type="text" class="search-input" placeholder="Search posts…" oninput="filterTable('posts-tbody',this.value)">
+            <select class="search-input" style="width:auto">
+              <option>All Status</option>
+              <option>Published</option>
+              <option>Draft</option>
+            </select>
+          </div>
+        </div>
+        <table id="PostsTable">
+          <thead><tr><th>Title</th><th>Author</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+          <tbody id="posts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── MESSAGES ─── -->
+    <div id="page-messages" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Messages Inbox</div>
+          <div class="page-subtitle">View and manage incoming messages</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark All Read</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteReadMessages()">Delete Read</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="msg-list" id="messages-list"></div>
+      </div>
+    </div>
+
+    <!-- ─── MESSAGE DETAIL (hidden panel) ─── -->
+    <div id="page-msg-detail" class="page">
+      <div class="page-header">
+        <button class="btn btn-ghost btn-sm" onclick="navigate('messages', document.querySelector('.nav-item:nth-child(3)'))">← Back to Inbox</button>
+      </div>
+      <div class="card" id="msg-detail-content"></div>
+    </div>
+
+    <!-- ─── REPORTS ─── -->
+    <div id="page-reports" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Reports</div>
+          <div class="page-subtitle">System statistics and data overview</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Report exported as CSV!','success')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+
+      <div class="report-grid" id="report-cards"></div>
+
+      <div class="charts-grid" style="margin-bottom:24px">
+        <div class="chart-wrap">
+          <div class="chart-title">Monthly Overview</div>
+          <div class="chart-sub">All sections combined activity per month</div>
+          <canvas id="chart-report-bar"></canvas>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">Section Distribution</div>
+          <div class="chart-sub">Percentage breakdown of all content</div>
+          <canvas id="chart-report-pie"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── ANALYTICS ─── -->
+    <div id="page-analytics" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Analytics</div>
+          <div class="page-subtitle">Detailed system performance metrics</div>
+        </div>
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab(this,'7d')">7 Days</div>
+          <div class="tab" onclick="switchTab(this,'30d')">30 Days</div>
+          <div class="tab" onclick="switchTab(this,'90d')">90 Days</div>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="analytics-stats"></div>
+
+      <div class="analytics-grid" style="margin-bottom:16px">
+        <div class="chart-wrap">
+          <div class="chart-title">Website Traffic</div>
+          <div class="chart-sub">Daily visitors and page views</div>
+          <canvas id="chart-traffic"></canvas>
+        </div>
+        <div class="chart-wrap">
+          <div class="chart-title">User Statistics</div>
+          <div class="chart-sub">New vs returning users</div>
+          <canvas id="chart-users-stat"></canvas>
+        </div>
+      </div>
+      <div class="chart-wrap" style="margin-bottom:16px">
+        <div class="chart-title">Content Performance</div>
+        <div class="chart-sub">Views and engagement by content type over time</div>
+        <canvas id="chart-content-perf" style="max-height:200px"></canvas>
+      </div>
+    </div>
+
+    <!-- ─── CHANGE PASSWORD ─── -->
+    <div id="page-changepass" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Change Password</div>
+          <div class="page-subtitle">Update your admin account password</div>
+        </div>
+      </div>
+      <div class="card" style="max-width:480px">
+        <div class="form-grid cols-1" style="gap:16px">
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input type="password" class="form-control" placeholder="Enter current password">
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" class="form-control" placeholder="Enter new password" id="new-pass">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" placeholder="Confirm new password" id="confirm-pass">
+          </div>
+          <div>
+            <div class="form-label" style="margin-bottom:8px">Password Strength</div>
+            <div class="progress-bar"><div class="progress-fill" id="pass-strength" style="width:0%"></div></div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="pass-strength-label">Enter a password</div>
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── SETTINGS ─── -->
+    <div id="page-settings" class="page">
+      <div class="page-header">
+        <div>
+          <div class="page-title">System Settings</div>
+          <div class="page-subtitle">Configure your ProEx admin panel</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Settings saved successfully!','success')">Save Changes</button>
+      </div>
+
+      <div style="max-width:700px">
+        <div class="settings-section">
+          <div class="settings-title">General Settings</div>
+          <div class="card">
+            <div class="form-grid" style="gap:16px">
+              <div class="form-group">
+                <label class="form-label">Company Name</label>
+                <input class="form-control" value="ProEx" type="text">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Admin Email</label>
+                <input class="form-control" value="admin@proex.com" type="email">
+              </div>
+              <div class="form-group form-full">
+                <label class="form-label">Company Description</label>
+                <textarea class="form-control">Leading provider of professional excellence solutions.</textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Timezone</label>
+                <select class="form-control">
+                  <option>UTC+0 — London</option>
+                  <option>UTC+1 — Paris</option>
+                  <option>UTC+3 — Riyadh</option>
+                  <option>UTC+8 — Kuala Lumpur</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Language</label>
+                <select class="form-control">
+                  <option>English</option>
+                  <option>Arabic</option>
+                  <option>French</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">Security Settings</div>
+          <div class="card">
+            <div class="form-grid cols-1" style="gap:16px">
+              <div class="form-group">
+                <label class="form-label">Session Timeout (minutes)</label>
+                <input class="form-control" value="30" type="number">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Max Login Attempts</label>
+                <input class="form-control" value="5" type="number">
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)">
+                <div>
+                  <div style="font-size:13px;font-weight:500;color:var(--text)">Two-Factor Authentication</div>
+                  <div style="font-size:12px;color:var(--text-muted)">Require 2FA for all admin accounts</div>
+                </div>
+                <div onclick="toggleSwitch(this)" style="width:44px;height:24px;background:var(--primary);border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s">
+                  <div style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;right:3px;transition:all 0.2s"></div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0">
+                <div>
+                  <div style="font-size:13px;font-weight:500;color:var(--text)">Email Notifications</div>
+                  <div style="font-size:12px;color:var(--text-muted)">Receive alerts for new messages and actions</div>
+                </div>
+                <div onclick="toggleSwitch(this)" style="width:44px;height:24px;background:var(--primary);border-radius:12px;cursor:pointer;position:relative;transition:background 0.2s">
+                  <div style="width:18px;height:18px;background:white;border-radius:50%;position:absolute;top:3px;right:3px;transition:all 0.2s"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">Profile Settings</div>
+          <div class="card">
+            <div class="form-grid" style="gap:16px">
+              <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input class="form-control" value="Super Admin" type="text">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Username</label>
+                <input class="form-control" value="superadmin" type="text">
+              </div>
+              <div class="form-group form-full">
+                <label class="form-label">Profile Photo</label>
+                <input class="form-control" type="file" accept="image/*">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── MODALS ─── -->
+
+<!-- Add User Modal -->
+<div class="modal-overlay" id="modal-add-user">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="user-modal-title">Add New User</div>
+      <div class="modal-close" onclick="closeModal('modal-add-user')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-control" id="u-name" placeholder="John Smith">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username *</label>
+          <input class="form-control" id="u-username" placeholder="johnsmith">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Email Address *</label>
+          <input class="form-control" id="u-email" type="email" placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password *</label>
+          <input class="form-control" id="u-pass" type="password" placeholder="••••••••">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-control" id="u-role">
+            <option>Admin</option>
+            <option>Editor</option>
+            <option>Viewer</option>
+            <option>Manager</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-control" id="u-status">
+            <option>Active</option>
+            <option>Inactive</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Profile Photo (optional)</label>
+          <input class="form-control" type="file" accept="image/*">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-user')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Service Modal -->
+<div class="modal-overlay" id="modal-add-service">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="service-modal-title">Add New Service</div>
+      <div class="modal-close" onclick="closeModal('modal-add-service')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-label">Service Title *</label>
+          <input class="form-control" id="s-title" placeholder="e.g. Web Development">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Description *</label>
+          <textarea class="form-control" id="s-desc" placeholder="Describe the service…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon (emoji or code)</label>
+          <input class="form-control" id="s-icon" placeholder="🚀">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service Image</label>
+          <input class="form-control" type="file" accept="image/*">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-service')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveService()">Save Service</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Team Modal -->
+<div class="modal-overlay" id="modal-add-team">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="team-modal-title">Add Team Member</div>
+      <div class="modal-close" onclick="closeModal('modal-add-team')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input class="form-control" id="t-name" placeholder="Jane Doe">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Position *</label>
+          <input class="form-control" id="t-position" placeholder="Senior Designer">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" id="t-desc" placeholder="Brief bio…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Profile Photo</label>
+          <input class="form-control" type="file" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label class="form-label">LinkedIn URL</label>
+          <input class="form-control" id="t-linkedin" placeholder="https://linkedin.com/in/…">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-team')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTeam()">Save Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal-overlay" id="modal-add-client">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="client-modal-title">Add Client</div>
+      <div class="modal-close" onclick="closeModal('modal-add-client')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Client Name *</label>
+          <input class="form-control" id="c-name" placeholder="Acme Corp">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Website</label>
+          <input class="form-control" id="c-web" placeholder="https://acme.com">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" id="c-desc" placeholder="About this client…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Logo</label>
+          <input class="form-control" type="file" accept="image/*">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-client')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveClient()">Save Client</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Media Modal -->
+<div class="modal-overlay" id="modal-upload-media">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Upload Media</div>
+      <div class="modal-close" onclick="closeModal('modal-upload-media')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="upload-zone" onclick="document.getElementById('media-file-input').click()">
+        <div class="upload-icon">📁</div>
+        <p>Click to select files or drag & drop</p>
+        <span>PNG, JPG, GIF, WEBP up to 10MB</span>
+        <input type="file" id="media-file-input" style="display:none" accept="image/*" multiple onchange="handleMediaUpload(this)">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input class="form-control" id="media-title" placeholder="Image title…">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-upload-media')">Cancel</button>
+      <button class="btn btn-primary" onclick="uploadMedia()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Post Modal -->
+<div class="modal-overlay" id="modal-add-post">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header">
+      <div class="modal-title" id="post-modal-title">Create New Post</div>
+      <div class="modal-close" onclick="closeModal('modal-add-post')">✕</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid cols-1" style="gap:14px">
+        <div class="form-group">
+          <label class="form-label">Post Title *</label>
+          <input class="form-control" id="p-title" placeholder="Enter post title…">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content *</label>
+          <textarea class="form-control" id="p-content" style="min-height:120px" placeholder="Write your post content here…"></textarea>
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Author</label>
+            <input class="form-control" id="p-author" placeholder="Author name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-control" id="p-status">
+              <option>Published</option>
+              <option>Draft</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Featured Image</label>
+            <input class="form-control" type="file" accept="image/*">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Publish Date</label>
+            <input class="form-control" id="p-date" type="date">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-post')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePost()">Publish Post</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="confirm-dialog">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Delete Item</div>
+    <div class="confirm-text" id="confirm-text">Are you sure you want to delete this item? This action cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">Cancel</button>
+      <button class="btn btn-danger" id="confirm-action-btn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+// ─── DATA STORE ───────────────────────────────────────────────────────────────
+let DB = {
+  users: [
+    { id:1, name:'Alice Johnson', username:'alice_j', email:'alice@proex.com', role:'Admin', status:'Active', created:'2024-01-15' },
+    { id:2, name:'Bob Martinez', username:'bob_m', email:'bob@proex.com', role:'Editor', status:'Active', created:'2024-02-20' },
+    { id:3, name:'Carol White', username:'carol_w', email:'carol@proex.com', role:'Viewer', status:'Inactive', created:'2024-03-10' },
+    { id:4, name:'David Kim', username:'david_k', email:'david@proex.com', role:'Manager', status:'Active', created:'2024-04-05' },
+    { id:5, name:'Emma Stone', username:'emma_s', email:'emma@proex.com', role:'Editor', status:'Active', created:'2024-05-12' },
+  ],
+  services: [
+    { id:1, title:'Web Development', desc:'Full-stack web development with modern technologies.', icon:'💻', created:'2024-01-01' },
+    { id:2, title:'Mobile Apps', desc:'Cross-platform mobile applications for iOS and Android.', icon:'📱', created:'2024-01-15' },
+    { id:3, title:'UI/UX Design', desc:'Beautiful and intuitive user interface design.', icon:'🎨', created:'2024-02-01' },
+    { id:4, title:'Cloud Solutions', desc:'Scalable cloud infrastructure and DevOps services.', icon:'☁️', created:'2024-02-20' },
+  ],
+  team: [
+    { id:1, name:'Sarah Connor', position:'Lead Designer', desc:'10+ years in UI/UX and brand identity design.', created:'2023-11-01' },
+    { id:2, name:'Mike Chen', position:'CTO', desc:'Full-stack developer with expertise in cloud architecture.', created:'2023-11-15' },
+    { id:3, name:'Layla Hassan', position:'Project Manager', desc:'Certified PMP with 8 years of project delivery experience.', created:'2024-01-10' },
+  ],
+  clients: [
+    { id:1, name:'TechVision Corp', desc:'Enterprise software solutions provider.', website:'https://techvision.com', created:'2024-01-20' },
+    { id:2, name:'Global Retail Ltd', desc:'International retail chain with 500+ stores.', website:'https://globalretail.com', created:'2024-02-15' },
+    { id:3, name:'HealthFirst', desc:'Leading healthcare technology platform.', website:'https://healthfirst.io', created:'2024-03-01' },
+  ],
+  media: [
+    { id:1, title:'Hero Banner', date:'2024-03-01', color:'#298A8B' },
+    { id:2, title:'Team Photo', date:'2024-03-05', color:'#5D9CB5' },
+    { id:3, title:'Service Cover', date:'2024-03-08', color:'#3d7a5e' },
+    { id:4, title:'Blog Header', date:'2024-03-10', color:'#8B6B29' },
+    { id:5, title:'Logo Variant', date:'2024-03-12', color:'#6B298B' },
+    { id:6, title:'Case Study', date:'2024-03-15', color:'#298B5A' },
+  ],
+  posts: [
+    { id:1, title:'The Future of Web Development in 2025', author:'Alice Johnson', status:'Published', date:'2024-03-01' },
+    { id:2, title:'10 UI Design Trends You Cannot Miss', author:'Sarah Connor', status:'Published', date:'2024-03-05' },
+    { id:3, title:'Building Scalable APIs with Node.js', author:'Mike Chen', status:'Draft', date:'2024-03-08' },
+    { id:4, title:'Cloud Migration: A Complete Guide', author:'Mike Chen', status:'Published', date:'2024-03-12' },
+  ],
+  messages: [
+    { id:1, name:'Ahmed Al-Rashid', email:'ahmed@example.com', subject:'Partnership Inquiry', message:'Hello, I am interested in discussing a potential partnership with ProEx. We are looking for a reliable tech partner for our upcoming project.', date:'2024-03-15 09:30', read: false },
+    { id:2, name:'Sophie Müller', email:'sophie@example.com', subject:'Web Development Quote', message:'Hi, Could you please provide a quote for developing a full e-commerce platform? We have a mid-sized retail business.', date:'2024-03-14 14:20', read: false },
+    { id:3, name:'James Thornton', email:'james@example.com', subject:'Support Request', message:'I am experiencing issues with the dashboard after the last update. The analytics page seems to crash on Chrome.', date:'2024-03-13 11:05', read: false },
+    { id:4, name:'Priya Sharma', email:'priya@example.com', subject:'Design Services', message:'We are rebranding our company and need help with UI/UX design for our new product. Can you help?', date:'2024-03-12 16:45', read: true },
+    { id:5, name:'Carlos Rivera', email:'carlos@example.com', subject:'General Inquiry', message:'Just wanted to say the ProEx team has been absolutely amazing. Your mobile app is top-notch!', date:'2024-03-11 08:20', read: true },
+  ],
+  editTarget: null,
+};
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+
+  // Empty fields check
+  if (!email && !pass) {
+    showLoginError('⚠️ Please enter your email and password');
+    return;
+  }
+  if (!email) {
+    showLoginError('⚠️ Please enter your email address');
+    return;
+  }
+  if (!pass) {
+    showLoginError('⚠️ Please enter your password');
+    return;
+  }
+
+  // Valid email format check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showLoginError('❌ Invalid email format. Please try again');
+    return;
+  }
+
+  // Special characters in password check
+  const passRegex = /^[a-zA-Z0-9@#$%^&*!_\-]+$/;
+  if (!passRegex.test(pass)) {
+    showLoginError('❌ Password contains invalid characters');
+    return;
+  }
+
+  // ✅ YOUR CREDENTIALS — change these two lines only
+  const correctEmail = 'admin@proex.com';   // 👈 change to your email
+  const correctPass  = '12345';          // 👈 change to your password
+
+  if (email === correctEmail && pass === correctPass) {
+    hideLoginError();
+    document.getElementById('login-screen').style.display = 'none';
+    initDashboard();
+  } else if (email !== correctEmail) {
+    showLoginError('❌ Email address not found. Try again');
+  } else {
+    showLoginError('❌ Incorrect password. Try again later');
+  }
+}
+
+function showLoginError(msg) {
+  let err = document.getElementById('login-error');
+  if (!err) {
+    err = document.createElement('div');
+    err.id = 'login-error';
+    err.style.cssText = `
+      background: rgba(224,91,91,0.12);
+      border: 1px solid rgba(224,91,91,0.35);
+      color: #E05B5B;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      text-align: center;
+    `;
+    const btn = document.querySelector('#login-screen .btn-primary');
+    btn.parentNode.insertBefore(err, btn);
+  }
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+
+function hideLoginError() {
+  const err = document.getElementById('login-error');
+  if (err) err.style.display = 'none';
+}
+
+function doLogout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-email').value = 'admin@proex.com';
+  document.getElementById('login-pass').value = 'admin123';
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  if (el) el.classList.add('active');
+
+  const titles = {
+    dashboard: 'Dashboard', users: 'Users Management', services: 'Services',
+    team: 'Our Team', clients: 'Clients', media: 'Media Library',
+    posts: 'Media Posts', messages: 'Messages', reports: 'Reports',
+    analytics: 'Analytics', changepass: 'Change Password', settings: 'Settings',
+    'msg-detail': 'Message Detail'
+  };
+  document.getElementById('topbar-title').textContent = titles[page] || page;
+
+  if (page === 'analytics') initAnalyticsCharts();
+  if (page === 'reports') initReportCharts();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function initDashboard() {
+  renderStatCards();
+  renderUsersTable();
+  renderServicesTable();
+  renderTeamTable();
+  renderClientsTable();
+  renderMediaGrid();
+  renderPostsTable();
+  renderMessages();
+  renderDashMessages();
+  initDashboardCharts();
+  updateMsgBadge();
+}
+
+// ─── STAT CARDS ───────────────────────────────────────────────────────────────
+function renderStatCards() {
+  const stats = [
+    { icon: '👥', label: 'Total Users', value: DB.users.length, change: '+12%', dir: 'up' },
+    { icon: '⚡', label: 'Total Services', value: DB.services.length, change: '+2', dir: 'up' },
+    { icon: '🏆', label: 'Team Members', value: DB.team.length, change: '0', dir: 'up' },
+    { icon: '🤝', label: 'Total Clients', value: DB.clients.length, change: '+1', dir: 'up' },
+    { icon: '📝', label: 'Media Posts', value: DB.posts.length, change: '+3', dir: 'up' },
+    { icon: '💬', label: 'Messages', value: DB.messages.length, change: DB.messages.filter(m=>!m.read).length + ' unread', dir: 'up' },
+  ];
+
+  document.getElementById('stat-cards').innerHTML = stats.map(s => `
+    <div class="stat-card">
+      <div class="stat-icon">${s.icon}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-change ${s.dir}">▲ ${s.change}</div>
+    </div>
+  `).join('');
+
+  // Analytics stats
+  const aStats = [
+    { icon:'👁️', label:'Total Views', value:'48,291', change:'+18%', dir:'up' },
+    { icon:'📈', label:'Avg. Session', value:'4m 32s', change:'+5%', dir:'up' },
+    { icon:'🔁', label:'Bounce Rate', value:'32.4%', change:'-3%', dir:'up' },
+    { icon:'🌍', label:'Unique Visitors', value:'12,840', change:'+9%', dir:'up' },
+  ];
+  const el = document.getElementById('analytics-stats');
+  if (el) el.innerHTML = aStats.map(s => `
+    <div class="stat-card">
+      <div class="stat-icon">${s.icon}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-change ${s.dir}">▲ ${s.change}</div>
+    </div>
+  `).join('');
+}
+
+// ─── DASHBOARD CHARTS ─────────────────────────────────────────────────────────
+function initDashboardCharts() {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // Growth
+  new Chart(document.getElementById('chart-growth'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'New Users',
+        data: [12,19,15,28,24,31,27,38,35,42,49,56],
+        borderColor: '#298A8B',
+        backgroundColor: 'rgba(41,138,139,0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#298A8B',
+        pointRadius: 3,
+      }]
+    },
+    options: chartOpts()
+  });
+
+  // Donut
+  new Chart(document.getElementById('chart-donut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Users','Services','Posts','Messages','Team','Clients'],
+      datasets: [{
+        data: [DB.users.length, DB.services.length, DB.posts.length, DB.messages.length, DB.team.length, DB.clients.length],
+        backgroundColor: ['#298A8B','#5D9CB5','#52C87A','#F0A500','#E05B5B','#9B6BC5'],
+        borderWidth: 0,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      ...chartOpts(),
+      cutout: '70%',
+      plugins: { legend: { position: 'right', labels: { color: '#9BA8B5', font: { size: 12 }, padding: 16 } } }
+    }
+  });
+
+  // Activity bar
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  new Chart(document.getElementById('chart-activity'), {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [
+        { label: 'Logins', data: [34,52,41,67,55,38,28], backgroundColor: 'rgba(41,138,139,0.7)', borderRadius: 4 },
+        { label: 'Actions', data: [22,31,19,45,38,14,10], backgroundColor: 'rgba(93,156,181,0.7)', borderRadius: 4 }
+      ]
+    },
+    options: chartOpts()
+  });
+}
+
+function chartOpts() {
+  return {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { labels: { color: '#9BA8B5', font: { size: 12 } } }
+    },
+    scales: {
+      x: { ticks: { color: '#6B7A8D', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      y: { ticks: { color: '#6B7A8D', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+    }
+  };
+}
+
+function initAnalyticsCharts() {
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const ctx1 = document.getElementById('chart-traffic');
+  const ctx2 = document.getElementById('chart-users-stat');
+  const ctx3 = document.getElementById('chart-content-perf');
+
+  if (ctx1 && !ctx1._chart) {
+    ctx1._chart = new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: days,
+        datasets: [
+          { label: 'Visitors', data: [1200,1850,1600,2100,1950,1400,900], borderColor:'#298A8B', backgroundColor:'rgba(41,138,139,0.08)', fill:true, tension:0.4 },
+          { label: 'Page Views', data: [3200,5100,4600,6200,5800,3900,2800], borderColor:'#5D9CB5', backgroundColor:'rgba(93,156,181,0.08)', fill:true, tension:0.4 },
+        ]
+      },
+      options: chartOpts()
+    });
+  }
+
+  if (ctx2 && !ctx2._chart) {
+    ctx2._chart = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: days,
+        datasets: [
+          { label: 'New Users', data: [12,19,14,25,22,16,9], backgroundColor:'rgba(41,138,139,0.7)', borderRadius:4 },
+          { label: 'Returning', data: [35,48,39,61,52,38,28], backgroundColor:'rgba(93,156,181,0.7)', borderRadius:4 },
+        ]
+      },
+      options: chartOpts()
+    });
+  }
+
+  if (ctx3 && !ctx3._chart) {
+    ctx3._chart = new Chart(ctx3, {
+      type: 'line',
+      data: {
+        labels: ['Jan','Feb','Mar','Apr','May','Jun'],
+        datasets: [
+          { label: 'Posts', data: [8,12,10,15,13,18], borderColor:'#52C87A', tension:0.4, fill:false },
+          { label: 'Media', data: [5,8,6,11,9,14], borderColor:'#F0A500', tension:0.4, fill:false },
+          { label: 'Messages', data: [20,28,18,32,25,38], borderColor:'#E05B5B', tension:0.4, fill:false },
+        ]
+      },
+      options: chartOpts()
+    });
+  }
+}
+
+function initReportCharts() {
+  const rEl = document.getElementById('report-cards');
+  if (!rEl) return;
+
+  const rData = [
+    { label:'Total Users', value: DB.users.length, pct: 78 },
+    { label:'Active Services', value: DB.services.length, pct: 100 },
+    { label:'Team Members', value: DB.team.length, pct: 60 },
+    { label:'Clients', value: DB.clients.length, pct: 45 },
+    { label:'Published Posts', value: DB.posts.filter(p=>p.status==='Published').length, pct: 75 },
+    { label:'Unread Messages', value: DB.messages.filter(m=>!m.read).length, pct: 30 },
+  ];
+
+  rEl.innerHTML = rData.map(r => `
+    <div class="report-card">
+      <div class="report-label">${r.label}</div>
+      <div class="report-value">${r.value}</div>
+      <div class="report-progress-label"><span>Progress</span><span>${r.pct}%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${r.pct}%"></div></div>
+    </div>
+  `).join('');
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const rb = document.getElementById('chart-report-bar');
+  const rp = document.getElementById('chart-report-pie');
+
+  if (rb && !rb._chart) {
+    rb._chart = new Chart(rb, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          { label:'Users', data:[3,5,4,6,4,7,5,8,7,9,8,10], backgroundColor:'rgba(41,138,139,0.7)', borderRadius:4 },
+          { label:'Posts', data:[1,2,1,3,2,3,2,4,3,5,4,6], backgroundColor:'rgba(93,156,181,0.7)', borderRadius:4 },
+          { label:'Messages', data:[4,6,5,8,6,9,7,10,9,12,10,14], backgroundColor:'rgba(240,165,0,0.7)', borderRadius:4 },
+        ]
+      },
+      options: chartOpts()
+    });
+  }
+
+  if (rp && !rp._chart) {
+    rp._chart = new Chart(rp, {
+      type: 'pie',
+      data: {
+        labels: ['Users','Services','Posts','Messages','Team','Clients'],
+        datasets: [{
+          data: [DB.users.length, DB.services.length, DB.posts.length, DB.messages.length, DB.team.length, DB.clients.length],
+          backgroundColor: ['#298A8B','#5D9CB5','#52C87A','#F0A500','#E05B5B','#9B6BC5'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        ...chartOpts(),
+        plugins: { legend: { position: 'right', labels: { color: '#9BA8B5', font: { size: 12 }, padding: 14 } } }
+      }
+    });
+  }
+}
+
+// ─── USERS ────────────────────────────────────────────────────────────────────
+function renderUsersTable() {
+  const tbody = document.getElementById('users-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = DB.users.map(u => `
+    <tr>
+      <td><div class="user-cell"><div class="user-avatar">${u.name.slice(0,2).toUpperCase()}</div><span class="td-bold">${u.name}</span></div></td>
+      <td>@${u.username}</td>
+      <td>${u.email}</td>
+      <td><span class="badge badge-primary">${u.role}</span></td>
+      <td><span class="badge ${u.status==='Active'?'badge-green':'badge-red'}">${u.status}</span></td>
+      <td>${u.created}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-xs" onclick="editUser(${u.id})">Edit</button>
+          <button class="btn btn-xs" onclick="toggleUserStatus(${u.id})" style="background:var(--bg4);color:var(--text-dim);border:1px solid var(--border)">${u.status==='Active'?'Disable':'Enable'}</button>
+          <button class="btn btn-xs" onclick="resetPassword(${u.id})" style="background:rgba(240,165,0,0.1);color:var(--yellow);border:1px solid rgba(240,165,0,0.2)">Reset</button>
+          <button class="btn btn-danger btn-xs" onclick="confirmDelete('user',${u.id})">Del</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function saveUser() {
+  const name = document.getElementById('u-name').value.trim();
+  const username = document.getElementById('u-username').value.trim();
+  const email = document.getElementById('u-email').value.trim();
+  const role = document.getElementById('u-role').value;
+  const status = document.getElementById('u-status').value;
+
+  if (!name || !username || !email) { showToast('Please fill required fields', 'error'); return; }
+
+  if (DB.editTarget && DB.editTarget.type === 'user') {
+    const u = DB.users.find(x => x.id === DB.editTarget.id);
+    if (u) { u.name=name; u.username=username; u.email=email; u.role=role; u.status=status; }
+    DB.editTarget = null;
+    document.getElementById('user-modal-title').textContent = 'Add New User';
+    showToast('User updated successfully!', 'success');
+  } else {
+    DB.users.push({ id: Date.now(), name, username, email, role, status, created: new Date().toISOString().slice(0,10) });
+    showToast('User added successfully!', 'success');
+  }
+
+  closeModal('modal-add-user');
+  renderUsersTable();
+  renderStatCards();
+}
+
+function editUser(id) {
+  const u = DB.users.find(x => x.id === id);
+  if (!u) return;
+  DB.editTarget = { type: 'user', id };
+  document.getElementById('u-name').value = u.name;
+  document.getElementById('u-username').value = u.username;
+  document.getElementById('u-email').value = u.email;
+  document.getElementById('u-role').value = u.role;
+  document.getElementById('u-status').value = u.status;
+  document.getElementById('u-pass').value = '';
+  document.getElementById('user-modal-title').textContent = 'Edit User';
+  openModal('modal-add-user');
+}
+
+function toggleUserStatus(id) {
+  const u = DB.users.find(x => x.id === id);
+  if (u) { u.status = u.status === 'Active' ? 'Inactive' : 'Active'; renderUsersTable(); showToast(`User ${u.status.toLowerCase()}d`, 'info'); }
+}
+
+function resetPassword(id) {
+  showToast('Password reset email sent!', 'success');
+}
+
+// ─── SERVICES ─────────────────────────────────────────────────────────────────
+function renderServicesTable() {
+  const tbody = document.getElementById('services-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = DB.services.map(s => `
+    <tr>
+      <td><span style="font-size:24px">${s.icon}</span></td>
+      <td class="td-bold">${s.title}</td>
+      <td>${s.desc}</td>
+      <td>${s.created}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-xs" onclick="editService(${s.id})">Edit</button>
+          <button class="btn btn-danger btn-xs" onclick="confirmDelete('service',${s.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function saveService() {
+  const title = document.getElementById('s-title').value.trim();
+  const desc = document.getElementById('s-desc').value.trim();
+  const icon = document.getElementById('s-icon').value.trim() || '⚙️';
+
+  if (!title || !desc) { showToast('Please fill required fields', 'error'); return; }
+
+  if (DB.editTarget && DB.editTarget.type === 'service') {
+    const s = DB.services.find(x => x.id === DB.editTarget.id);
+    if (s) { s.title=title; s.desc=desc; s.icon=icon; }
+    DB.editTarget = null;
+    document.getElementById('service-modal-title').textContent = 'Add New Service';
+    showToast('Service updated!', 'success');
+  } else {
+    DB.services.push({ id: Date.now(), title, desc, icon, created: new Date().toISOString().slice(0,10) });
+    showToast('Service added!', 'success');
+  }
+
+  closeModal('modal-add-service');
+  renderServicesTable();
+  renderStatCards();
+}
+
+function editService(id) {
+  const s = DB.services.find(x => x.id === id);
+  if (!s) return;
+  DB.editTarget = { type: 'service', id };
+  document.getElementById('s-title').value = s.title;
+  document.getElementById('s-desc').value = s.desc;
+  document.getElementById('s-icon').value = s.icon;
+  document.getElementById('service-modal-title').textContent = 'Edit Service';
+  openModal('modal-add-service');
+}
+
+// ─── TEAM ─────────────────────────────────────────────────────────────────────
+function renderTeamTable() {
+  const tbody = document.getElementById('team-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = DB.team.map(t => `
+    <tr>
+      <td><div class="user-cell"><div class="user-avatar" style="width:36px;height:36px;font-size:13px">${t.name.slice(0,2).toUpperCase()}</div><span class="td-bold">${t.name}</span></div></td>
+      <td><span class="badge badge-blue">${t.position}</span></td>
+      <td>${t.desc}</td>
+      <td>${t.created}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-xs" onclick="editTeam(${t.id})">Edit</button>
+          <button class="btn btn-danger btn-xs" onclick="confirmDelete('team',${t.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function saveTeam() {
+  const name = document.getElementById('t-name').value.trim();
+  const position = document.getElementById('t-position').value.trim();
+  const desc = document.getElementById('t-desc').value.trim();
+
+  if (!name || !position) { showToast('Please fill required fields', 'error'); return; }
+
+  if (DB.editTarget && DB.editTarget.type === 'team') {
+    const t = DB.team.find(x => x.id === DB.editTarget.id);
+    if (t) { t.name=name; t.position=position; t.desc=desc; }
+    DB.editTarget = null;
+    showToast('Member updated!', 'success');
+  } else {
+    DB.team.push({ id: Date.now(), name, position, desc, created: new Date().toISOString().slice(0,10) });
+    showToast('Team member added!', 'success');
+  }
+
+  closeModal('modal-add-team');
+  renderTeamTable();
+  renderStatCards();
+}
+
+function editTeam(id) {
+  const t = DB.team.find(x => x.id === id);
+  if (!t) return;
+  DB.editTarget = { type: 'team', id };
+  document.getElementById('t-name').value = t.name;
+  document.getElementById('t-position').value = t.position;
+  document.getElementById('t-desc').value = t.desc;
+  document.getElementById('team-modal-title').textContent = 'Edit Team Member';
+  openModal('modal-add-team');
+}
+
+// ─── CLIENTS ──────────────────────────────────────────────────────────────────
+function renderClientsTable() {
+  const tbody = document.getElementById('clients-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = DB.clients.map(c => `
+    <tr>
+      <td><div style="width:40px;height:40px;border-radius:8px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary-light);font-size:14px">${c.name.slice(0,2).toUpperCase()}</div></td>
+      <td class="td-bold">${c.name}</td>
+      <td>${c.desc}</td>
+      <td><a href="${c.website}" target="_blank" style="color:var(--primary-light);font-size:12px">${c.website}</a></td>
+      <td>${c.created}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-xs" onclick="editClient(${c.id})">Edit</button>
+          <button class="btn btn-danger btn-xs" onclick="confirmDelete('client',${c.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function saveClient() {
+  const name = document.getElementById('c-name').value.trim();
+  const desc = document.getElementById('c-desc').value.trim();
+  const website = document.getElementById('c-web').value.trim();
+
+  if (!name) { showToast('Client name is required', 'error'); return; }
+
+  if (DB.editTarget && DB.editTarget.type === 'client') {
+    const c = DB.clients.find(x => x.id === DB.editTarget.id);
+    if (c) { c.name=name; c.desc=desc; c.website=website; }
+    DB.editTarget = null;
+    showToast('Client updated!', 'success');
+  } else {
+    DB.clients.push({ id: Date.now(), name, desc, website, created: new Date().toISOString().slice(0,10) });
+    showToast('Client added!', 'success');
+  }
+
+  closeModal('modal-add-client');
+  renderClientsTable();
+  renderStatCards();
+}
+
+function editClient(id) {
+  const c = DB.clients.find(x => x.id === id);
+  if (!c) return;
+  DB.editTarget = { type: 'client', id };
+  document.getElementById('c-name').value = c.name;
+  document.getElementById('c-desc').value = c.desc;
+  document.getElementById('c-web').value = c.website;
+  document.getElementById('client-modal-title').textContent = 'Edit Client';
+  openModal('modal-add-client');
+}
+
+// ─── MEDIA ────────────────────────────────────────────────────────────────────
+function renderMediaGrid() {
+  const grid = document.getElementById('media-grid');
+  if (!grid) return;
+  grid.innerHTML = DB.media.map(m => `
+    <div class="media-item">
+      <div class="media-thumb">
+        <div class="media-placeholder" style="background:${m.color}22">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${m.color}" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>${m.title}</span>
+        </div>
+      </div>
+      <div class="media-info">
+        <div class="media-name">${m.title}</div>
+        <div class="media-date">${m.date}</div>
+      </div>
+      <div class="media-del" onclick="deleteMedia(${m.id})">✕</div>
+    </div>
+  `).join('');
+}
+
+function handleMediaUpload(input) {
+  if (input.files.length) {
+    showToast(`${input.files.length} file(s) ready to upload`, 'info');
+  }
+}
+
+function uploadMedia() {
+  const title = document.getElementById('media-title').value.trim() || 'Untitled Media';
+  const colors = ['#298A8B','#5D9CB5','#52C87A','#F0A500','#E05B5B','#9B6BC5','#3d7a5e'];
+  DB.media.push({
+    id: Date.now(),
+    title,
+    date: new Date().toISOString().slice(0,10),
+    color: colors[Math.floor(Math.random()*colors.length)]
+  });
+  document.getElementById('media-title').value = '';
+  closeModal('modal-upload-media');
+  renderMediaGrid();
+  showToast('Media uploaded!', 'success');
+}
+
+function deleteMedia(id) {
+  DB.media = DB.media.filter(m => m.id !== id);
+  renderMediaGrid();
+  showToast('Media deleted', 'info');
+}
+
+// ─── POSTS ────────────────────────────────────────────────────────────────────
+function renderPostsTable() {
+  const tbody = document.getElementById('posts-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = DB.posts.map(p => `
+    <tr>
+      <td class="td-bold">${p.title}</td>
+      <td>${p.author}</td>
+      <td><span class="badge ${p.status==='Published'?'badge-green':'badge-yellow'}">${p.status}</span></td>
+      <td>${p.date}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-xs" onclick="editPost(${p.id})">Edit</button>
+          <button class="btn btn-danger btn-xs" onclick="confirmDelete('post',${p.id})">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function savePost() {
+  const title = document.getElementById('p-title').value.trim();
+  const content = document.getElementById('p-content').value.trim();
+  const author = document.getElementById('p-author').value.trim() || 'Super Admin';
+  const status = document.getElementById('p-status').value;
+  const date = document.getElementById('p-date').value || new Date().toISOString().slice(0,10);
+
+  if (!title || !content) { showToast('Title and content are required', 'error'); return; }
+
+  if (DB.editTarget && DB.editTarget.type === 'post') {
+    const p = DB.posts.find(x => x.id === DB.editTarget.id);
+    if (p) { p.title=title; p.author=author; p.status=status; p.date=date; }
+    DB.editTarget = null;
+    showToast('Post updated!', 'success');
+  } else {
+    DB.posts.push({ id: Date.now(), title, author, status, date });
+    showToast('Post published!', 'success');
+  }
+
+  closeModal('modal-add-post');
+  renderPostsTable();
+  renderStatCards();
+}
+
+function editPost(id) {
+  const p = DB.posts.find(x => x.id === id);
+  if (!p) return;
+  DB.editTarget = { type: 'post', id };
+  document.getElementById('p-title').value = p.title;
+  document.getElementById('p-author').value = p.author;
+  document.getElementById('p-status').value = p.status;
+  document.getElementById('p-date').value = p.date;
+  document.getElementById('post-modal-title').textContent = 'Edit Post';
+  openModal('modal-add-post');
+}
+
+// ─── MESSAGES ─────────────────────────────────────────────────────────────────
+function renderMessages() {
+  const list = document.getElementById('messages-list');
+  if (!list) return;
+  list.innerHTML = DB.messages.map(m => `
+    <div class="msg-item ${!m.read?'unread':''}" onclick="viewMessage(${m.id})">
+      ${!m.read ? '<div class="msg-unread-dot"></div>' : '<div style="width:7px;flex-shrink:0"></div>'}
+      <div class="msg-avatar">${m.name.slice(0,2).toUpperCase()}</div>
+      <div class="msg-info">
+        <div class="msg-name">${m.name}</div>
+        <div class="msg-subject">${m.subject}</div>
+        <div class="msg-preview">${m.message.slice(0,80)}…</div>
+      </div>
+      <div>
+        <div class="msg-time">${m.date.slice(5)}</div>
+        <div style="display:flex;gap:4px;margin-top:6px;justify-content:flex-end">
+          ${!m.read ? `<button class="btn btn-xs" style="background:var(--primary-ghost);color:var(--primary-light);border:1px solid var(--border-accent)" onclick="event.stopPropagation();markRead(${m.id})">Read</button>` : ''}
+          <button class="btn btn-danger btn-xs" onclick="event.stopPropagation();confirmDelete('message',${m.id})">Del</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDashMessages() {
+  const el = document.getElementById('dash-messages');
+  if (!el) return;
+  el.innerHTML = DB.messages.slice(0,4).map(m => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div class="msg-avatar" style="width:32px;height:32px;font-size:12px;flex-shrink:0">${m.name.slice(0,2).toUpperCase()}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--text)">${m.name}</div>
+        <div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.subject}</div>
+      </div>
+      ${!m.read ? '<span class="badge badge-primary" style="font-size:10px">New</span>' : ''}
+    </div>
+  `).join('');
+}
+
+function viewMessage(id) {
+  const m = DB.messages.find(x => x.id === id);
+  if (!m) return;
+  m.read = true;
+  updateMsgBadge();
+  renderMessages();
+
+  document.getElementById('msg-detail-content').innerHTML = `
+    <div style="margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--white);margin-bottom:16px">${m.subject}</div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div><div class="form-label">From</div><div style="color:var(--text);font-size:14px">${m.name}</div></div>
+        <div><div class="form-label">Email</div><div style="color:var(--primary-light);font-size:14px">${m.email}</div></div>
+        <div><div class="form-label">Date</div><div style="color:var(--text);font-size:14px">${m.date}</div></div>
+      </div>
+    </div>
+    <div style="font-size:15px;line-height:1.7;color:var(--text-dim)">${m.message}</div>
+    <div style="margin-top:24px;display:flex;gap:10px">
+      <button class="btn btn-primary btn-sm" onclick="showToast('Reply sent!','success')">↩ Reply</button>
+      <button class="btn btn-danger btn-sm" onclick="confirmDelete('message',${m.id})">Delete</button>
+    </div>
+  `;
+
+  navigate('msg-detail', null);
+}
+
+function markRead(id) {
+  const m = DB.messages.find(x => x.id === id);
+  if (m) { m.read = true; renderMessages(); updateMsgBadge(); showToast('Marked as read', 'info'); }
+}
+
+function markAllRead() {
+  DB.messages.forEach(m => m.read = true);
+  renderMessages();
+  updateMsgBadge();
+  showToast('All messages marked as read', 'success');
+}
+
+function deleteReadMessages() {
+  DB.messages = DB.messages.filter(m => !m.read);
+  renderMessages();
+  renderStatCards();
+  showToast('Read messages deleted', 'info');
+}
+
+function updateMsgBadge() {
+  const unread = DB.messages.filter(m => !m.read).length;
+  const badge = document.getElementById('msg-badge');
+  if (badge) { badge.textContent = unread; badge.style.display = unread ? 'inline' : 'none'; }
+}
+
+// ─── DELETE ───────────────────────────────────────────────────────────────────
+function confirmDelete(type, id) {
+  const labels = { user:'user', service:'service', team:'team member', client:'client', post:'post', message:'message' };
+  document.getElementById('confirm-text').textContent = `Are you sure you want to delete this ${labels[type] || 'item'}? This action cannot be undone.`;
+  document.getElementById('confirm-action-btn').onclick = () => {
+    doDelete(type, id);
+    closeModal('modal-confirm');
+  };
+  openModal('modal-confirm');
+}
+
+function doDelete(type, id) {
+  const map = { user:'users', service:'services', team:'team', client:'clients', post:'posts', message:'messages' };
+  const key = map[type];
+  if (key) DB[key] = DB[key].filter(x => x.id !== id);
+
+  const renders = { user: renderUsersTable, service: renderServicesTable, team: renderTeamTable, client: renderClientsTable, post: renderPostsTable, message: renderMessages };
+  if (renders[type]) renders[type]();
+  renderStatCards();
+  showToast(`${type} deleted`, 'info');
+}
+
+// ─── TABLE FILTER ─────────────────────────────────────────────────────────────
+function filterTable(tbodyId, query) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr');
+  const q = query.toLowerCase();
+  rows.forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function filterByStatus(status) {
+  const tbody = document.getElementById('users-tbody');
+  if (!tbody) return;
+  const rows = tbody.querySelectorAll('tr');
+  rows.forEach(r => {
+    r.style.display = !status || r.textContent.includes(status) ? '' : 'none';
+  });
+}
+
+// ─── CHANGE PASSWORD ──────────────────────────────────────────────────────────
+document.addEventListener('input', function(e) {
+  if (e.target.id === 'new-pass') {
+    const pass = e.target.value;
+    const strength = pass.length >= 12 ? 100 : pass.length >= 8 ? 60 : pass.length >= 4 ? 30 : 0;
+    const bar = document.getElementById('pass-strength');
+    const label = document.getElementById('pass-strength-label');
+    if (bar) bar.style.width = strength + '%';
+    if (label) {
+      const labels = [[0,'Enter a password'],[30,'Weak'],[60,'Moderate'],[100,'Strong']];
+      label.textContent = (labels.find(l => l[0] >= strength) || labels[3])[1];
+    }
+  }
+});
+
+function changePassword() {
+    const current = document.querySelector('#page-changepass .form-control').value;
+    const np = document.getElementById('new-pass').value;
+    const cp = document.getElementById('confirm-pass').value;
+
+    // Check current password
+    if (current !== DB.currentPassword) {
+        showToast('Current password is incorrect', 'error');
+        return;
+    }
+    if (!np) { showToast('Enter a new password', 'error'); return; }
+    if (np !== cp) { showToast('Passwords do not match', 'error'); return; }
+    if (np.length < 6) { showToast('Password too short (min 6 chars)', 'error'); return; }
+
+    // Update the password
+    DB.currentPassword = np;
+    showToast('Password updated successfully!', 'success');
+    document.getElementById('new-pass').value = '';
+    document.getElementById('confirm-pass').value = '';
+    document.querySelector('#page-changepass .form-control').value = '';
+}
+
+// ─── MODAL HELPERS ────────────────────────────────────────────────────────────
+function openModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.add('open');
+}
+
+function closeModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('open');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'info') {
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span style="font-size:14px">${icons[type]}</span> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(20px)'; toast.style.transition = 'all 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// ─── MISC ─────────────────────────────────────────────────────────────────────
+function switchTab(el, period) {
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  showToast(`Showing data for ${period}`, 'info');
+}
+
+function toggleSwitch(el) {
+  const isOn = el.style.background !== 'rgb(61, 61, 71)';
+  el.style.background = isOn ? '#3d3d47' : 'var(--primary)';
+  el.firstElementChild.style.right = isOn ? 'auto' : '3px';
+  el.firstElementChild.style.left = isOn ? '3px' : 'auto';
+}
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+});
+
+// Responsive sidebar
+function checkMobile() {
+  const menuBtn = document.getElementById('menu-btn');
+  if (window.innerWidth <= 768) {
+    menuBtn.style.display = 'flex';
+  } else {
+    menuBtn.style.display = 'none';
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+
+window.addEventListener('resize', checkMobile);
+checkMobile();
+
+// Login on Enter
+document.addEventListener('keypress', e => {
+  if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+    doLogin();
+  }
+});
+</script>
+<script>
+
+function exportExcel(){
+
+let workbook = XLSX.utils.book_new();
+
+/* USERS */
+let users = document.getElementById("reportTable");
+if(users){
+let sheet = XLSX.utils.table_to_sheet(users);
+XLSX.utils.book_append_sheet(workbook, sheet, "Users");
+}
+
+/* SERVICES */
+let services = document.getElementById("ServicesTable");
+if(services){
+let sheet = XLSX.utils.table_to_sheet(services);
+XLSX.utils.book_append_sheet(workbook, sheet, "Services");
+}
+
+/* TEAM */
+let team = document.getElementById("TeamTable");
+if(team){
+let sheet = XLSX.utils.table_to_sheet(team);
+XLSX.utils.book_append_sheet(workbook, sheet, "Team");
+}
+
+/* CLIENTS */
+let clients = document.getElementById("clientsTable");
+if(clients){
+let sheet = XLSX.utils.table_to_sheet(clients);
+XLSX.utils.book_append_sheet(workbook, sheet, "Clients");
+}
+
+/* POSTS */
+let posts = document.getElementById("PostsTable");
+if(posts){
+let sheet = XLSX.utils.table_to_sheet(posts);
+XLSX.utils.book_append_sheet(workbook, sheet, "Posts");
+}
+
+/* DOWNLOAD FILE */
+
+XLSX.writeFile(workbook,"ProEx_Full_Report.xlsx");
+
+}
+
+</script>
+<script>
+
+async function exportPDF(){
+
+const { jsPDF } = window.jspdf;
+
+const element = document.getElementById("content");
+
+const canvas = await html2canvas(element,{
+scale:2,
+useCORS:true
+});
+
+const imgData = canvas.toDataURL("image/png");
+
+const pdf = new jsPDF("p","mm","a4");
+
+const imgWidth = 210;
+const pageHeight = 295;
+const imgHeight = canvas.height * imgWidth / canvas.width;
+
+let heightLeft = imgHeight;
+let position = 0;
+
+pdf.addImage(imgData,"PNG",0,position,imgWidth,imgHeight);
+
+heightLeft -= pageHeight;
+
+while(heightLeft > 0){
+
+position = heightLeft - imgHeight;
+
+pdf.addPage();
+
+pdf.addImage(imgData,"PNG",0,position,imgWidth,imgHeight);
+
+heightLeft -= pageHeight;
+
+}
+
+pdf.save("ProEx_Analytics_Report.pdf");
+
+}
+
+</script>
+<script>
+
+function globalSearch(){
+
+const query = document.getElementById("globalSearch").value.toLowerCase();
+
+/* USERS */
+let filteredUsers = DB.users.filter(u =>
+JSON.stringify(u).toLowerCase().includes(query)
+);
+
+/* SERVICES */
+let filteredServices = DB.services.filter(s =>
+JSON.stringify(s).toLowerCase().includes(query)
+);
+
+/* TEAM */
+let filteredTeam = DB.team.filter(t =>
+JSON.stringify(t).toLowerCase().includes(query)
+);
+
+/* CLIENTS */
+let filteredClients = DB.clients.filter(c =>
+JSON.stringify(c).toLowerCase().includes(query)
+);
+
+/* MEDIA */
+let filteredMedia = DB.media.filter(m =>
+JSON.stringify(m).toLowerCase().includes(query)
+);
+
+/* RENDER RESULTS */
+
+renderUsers(filteredUsers);
+renderServices(filteredServices);
+renderTeam(filteredTeam);
+renderClients(filteredClients);
+renderMedia(filteredMedia);
+
+}
+
+</script>
+<script>
+
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement(
+    {
+      pageLanguage: 'en',
+      includedLanguages: 'en,ar',
+      layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+    },
+    'google_translate_element'
+  );
+}
+
+</script>
+<script>
+
+function toggleLanguage(){
+
+let select = document.querySelector(".goog-te-combo");
+
+if (!select) return;
+
+if(select.value === "ar"){
+select.value = "en";
+document.getElementById("langLabel").innerText = "AR";
+}else{
+select.value = "ar";
+document.getElementById("langLabel").innerText = "EN";
+}
+
+select.dispatchEvent(new Event("change"));
+
+}
+
+</script>
+<script>function googleTranslateElementInit() {
+  new google.translate.TranslateElement(
+    {
+      pageLanguage: 'en',
+      includedLanguages: 'en,ar',
+      autoDisplay: false
+    },
+    'google_translate_element'
+  );
+}</script>
+<script>
+
+function hideGoogleBanner(){
+const banner = document.querySelector('.goog-te-banner-frame');
+if(banner){
+banner.style.display='none';
+}
+
+document.body.style.top='0px';
+}
+
+setInterval(hideGoogleBanner, 200);
+
+</script>
+</body>
+</html>
